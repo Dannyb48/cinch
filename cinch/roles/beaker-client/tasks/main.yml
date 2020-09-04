@@ -19,12 +19,14 @@
 - name: copy CA cert if necessary
   become: true
   copy:
-    src: "{{ item }}"
+    src: "{{ lookup('first_found', bkrcert, errors='ignore') }}"
     dest: "{{ beaker_ca_cert_path }}"
     owner: root
     group: root
     mode: 0644
-  with_first_found:
-    - files:
+  vars:
+    bkrcert:
+      files:
         - "{{ beaker_cacert_file }}"
       skip: true
+  when: beaker_cacert_file is defined
